@@ -15,7 +15,6 @@ Empower your day with motivational videos pulled randomly from Instagram. Especi
 3. Run the Streamlit app.
 
 🔗 **Links & Resources**:
-- Instagram API
 - Streamlit Documentation
 
 🌟 **Contribute**:
