@@ -1,17 +1,32 @@
 import streamlit as st
-import streamlit as st
 import random
-st.set_page_config(layout="wide")
 
-col1, col2,col3 = st.columns([2,1,3],gap="medium")
+# Set up the Streamlit layout
+st.set_page_config(layout="wide")
+col1, col2, col3 = st.columns([2, 1, 3])
+
 def get_video(s):
-    index = random.choice(s).split('/')[4]
-    # index
+    # Check if weights exist in session state
+    if 'video_weights' not in st.session_state:
+        st.session_state.video_weights = [1] * len(s)
+
+    chosen_video = random.choices(s, st.session_state.video_weights)[0]  # Get a weighted video choice
+    st.session_state.video_weights[s.index(chosen_video)] -= 0.5  # Decrease the weight of the selected video
+    
+    # If all weights drop to 0 or below, reset them
+    if all(w <= 0 for w in st.session_state.video_weights):
+        st.session_state.video_weights = [1] * len(s)
+
+    return chosen_video.split('/')[4]
+
+def render_video(index):
+    # The rest of your video rendering code here...
     with col2:
         result = st.button("Random Motivation Video")
         with st.expander("More details"):
             st.write("Press `F11`")
-            st.write("Hit the button with Mouse 1st time then `use space` in keyboard 💗")
+            st.write("🎧 on")
+
     with col1:
         if result:
             st.components.v1.html(f'''<blockquote class="instagram-media"
@@ -103,9 +118,10 @@ def get_video(s):
                         target="_blank">A post shared by RELENTLESS | Clothing Brand (@relentlessvids)</a></p>
             </div>
         </blockquote>
-        <script async src="//www.instagram.com/embed.js"></script>''',height=800)
+        <script async src="//www.instagram.com/embed.js"></script>''', height=800)
+
     with col3:
-        img = ['https://firebasestorage.googleapis.com/v0/b/notion-widgets.appspot.com/o/gallery%2FmwOz9ekU7AzYRJ56Sjmw%2Fll1vlo1u%2Fimage%20(5).png?alt=media&token=81d11ce1-f2cb-45d1-8738-257a70d643f2',
+        img = img = ['https://firebasestorage.googleapis.com/v0/b/notion-widgets.appspot.com/o/gallery%2FmwOz9ekU7AzYRJ56Sjmw%2Fll1vlo1u%2Fimage%20(5).png?alt=media&token=81d11ce1-f2cb-45d1-8738-257a70d643f2',
             'https://firebasestorage.googleapis.com/v0/b/notion-widgets.appspot.com/o/gallery%2FmwOz9ekU7AzYRJ56Sjmw%2Fll1vjv8q%2Fimage%20(4).png?alt=media&token=603961cc-5310-47fe-b784-de0eddb09f96',
             'https://firebasestorage.googleapis.com/v0/b/notion-widgets.appspot.com/o/gallery%2FmwOz9ekU7AzYRJ56Sjmw%2Fll1vn4ac%2Fimage%20(6).png?alt=media&token=3260807d-0c1f-4b5a-8219-33d68b8dbf33',
             'https://firebasestorage.googleapis.com/v0/b/notion-widgets.appspot.com/o/gallery%2F9k7M7gxirecYnKlekLtg%2Fll1vf7w8%2Fimage%20(2).png?alt=media&token=ec03a19b-0d8d-4451-8374-c98c0899b748',
@@ -120,11 +136,15 @@ def get_video(s):
             'https://firebasestorage.googleapis.com/v0/b/notion-widgets.appspot.com/o/gallery%2Fc4wLqrXoRtk2C7ccpnsz%2Fll1w8n8n%2Fimage%20(14).png?alt=media&token=aa02a234-a30a-496c-847c-c8b8a3f68c70',
             'https://firebasestorage.googleapis.com/v0/b/notion-widgets.appspot.com/o/gallery%2Fc4wLqrXoRtk2C7ccpnsz%2Fll1wag84%2Fimage%20(15).png?alt=media&token=1421d52a-cb21-47e5-9393-ce245739bb49',
             'https://firebasestorage.googleapis.com/v0/b/notion-widgets.appspot.com/o/gallery%2Fc4wLqrXoRtk2C7ccpnsz%2Fll1wi7tb%2Fimage%20(16).png?alt=media&token=d8cefae2-6ce6-4c25-b605-a4b83dacd390']
-        st.image(random.choice(img),use_column_width="auto")
-with st.sidebar:
-    st.title("Chandrashekhar Robbi")
-    st.write("This is for all the Students Especially Engineers💝. A Random Motivation videos will popup from instagram for now")
-s = ['https://www.instagram.com/reel/CspQKWisDC4/?utm_source=ig_web_copy_link&igshid=MzRlODBiNWFlZA%3D%3D',
+        
+        st.image(random.choice(img), use_column_width="auto")
+
+def main():
+    with st.sidebar:
+        st.title("Chandrashekhar Robbi")
+        st.write("This is for all the Students Especially Engineers💝. A Random Motivation videos will popup from Instagram for now")
+
+    s = ['https://www.instagram.com/reel/CspQKWisDC4/?utm_source=ig_web_copy_link&igshid=MzRlODBiNWFlZA%3D%3D',
      'https://www.instagram.com/reel/Cu9bnFcp8b7/?utm_source=ig_web_copy_link&igshid=MzRlODBiNWFlZA%3D%3D',
      'https://www.instagram.com/reel/CtO9X6UJTYu/?utm_source=ig_web_copy_link',
      'https://www.instagram.com/reel/CvGxPy6N0XP/?utm_source=ig_web_copy_link&igshid=MzRlODBiNWFlZA==',
@@ -142,14 +162,14 @@ s = ['https://www.instagram.com/reel/CspQKWisDC4/?utm_source=ig_web_copy_link&ig
      'https://www.instagram.com/reel/CxEb6AmJCsf/?utm_source=ig_web_copy_link',
      'https://www.instagram.com/reel/CxEb6AmJCsf/?utm_source=ig_web_copy_link',
      'https://www.instagram.com/reel/Cw2TvtaIF6Q/?utm_source=ig_web_copy_link',
-     'https://www.instagram.com/reel/CuErvVSAeWV/?utm_source=ig_web_copy_link',
      'https://www.instagram.com/reel/Cvqwg6wpuYI/?utm_source=ig_web_copy_link',
      'https://www.instagram.com/reel/Cw79STdyNkp/?utm_source=ig_web_copy_link',
      'https://www.instagram.com/reel/Cw-MFVHqjxS/?utm_source=ig_web_copy_link',
      'https://www.instagram.com/reel/CxIoR8vvOfR/?utm_source=ig_web_copy_link',
      'https://www.instagram.com/reel/Cw3HrYQo4UM/?utm_source=ig_web_copy_link']
-with col1:
-    get_video(s)
-    # st.video('https://scontent.cdninstagram.com/o1/v/t16/f1/m82/434BA85A4C1D7A03E1EDABEEFAB398B7_video_dashinit.mp4?efg=eyJxZV9ncm91cHMiOiJbXCJpZ193ZWJfZGVsaXZlcnlfdnRzX290ZlwiXSIsInZlbmNvZGVfdGFnIjoidnRzX3ZvZF91cmxnZW4uNzIwLmNsaXBzLmJhc2VsaW5lLmMyIn0&_nc_ht=scontent.cdninstagram.com&_nc_cat=100&vs=947810356488582_2140269916&_nc_vs=HBksFQIYT2lnX3hwdl9yZWVsc19wZXJtYW5lbnRfcHJvZC80MzRCQTg1QTRDMUQ3QTAzRTFFREFCRUVGQUIzOThCN192aWRlb19kYXNoaW5pdC5tcDQVAALIAQAVABgkR0MtMEh4WFQ4QXJ0OXM4Q0FCbi1KbmxvaW84TWJxX0VBQUFGFQICyAEAKAAYABsAFQAAJujB8p%2F5%2FNA%2FFQIoAkMzLBdAReIMSbpeNRgSZGFzaF9iYXNlbGluZV8xX3YxEQB1%2FgcA&_nc_rid=7b9f93faca&ccb=9-4&oh=00_AfB4c5yPo58odKqt7uCDP1sI4zGSj0Pk2qqSWH5b7TrN7w&oe=6504DAD5&_nc_sid=10d13b.mp4')
-# @st.cache
-# 
+    video_index = get_video(s)
+    render_video(video_index)
+
+if __name__ == '__main__':
+    main()
+
